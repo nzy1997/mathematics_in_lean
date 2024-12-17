@@ -44,7 +44,11 @@ example (x : ℝ) : x ≤ x :=
 
 -- Try this.
 example (h₀ : a ≤ b) (h₁ : b < c) (h₂ : c ≤ d) (h₃ : d < e) : a < e := by
-  sorry
+  have h₄: a < c := by
+   apply lt_of_le_of_lt h₀ h₁
+  have h₅: c < e := by
+   apply lt_of_le_of_lt h₂ h₃
+  exact lt_trans h₄ h₅
 
 example (h₀ : a ≤ b) (h₁ : b < c) (h₂ : c ≤ d) (h₃ : d < e) : a < e := by
   linarith
@@ -86,21 +90,27 @@ example (h₀ : a ≤ b) (h₁ : c < d) : a + exp c + e < b + exp d + e := by
     apply exp_lt_exp.mpr h₁
   apply le_refl
 
-example (h₀ : d ≤ e) : c + exp (a + d) ≤ c + exp (a + e) := by sorry
+example (h₀ : d ≤ e) : c + exp (a + d) ≤ c + exp (a + e) := by
+  have h₁ : a + d ≤ a + e := by
+    apply add_le_add_left
+    exact h₀
+  linarith [exp_le_exp.mpr h₁]
 
 example : (0 : ℝ) < 1 := by norm_num
 
 example (h : a ≤ b) : log (1 + exp a) ≤ log (1 + exp b) := by
-  have h₀ : 0 < 1 + exp a := by sorry
+  have h₀ : 0 < 1 + exp a := by
+    linarith [norm_num, exp_pos a]
   apply log_le_log h₀
-  sorry
+  linarith [exp_le_exp.mpr h]
 
 example : 0 ≤ a ^ 2 := by
   -- apply?
   exact sq_nonneg a
 
 example (h : a ≤ b) : c - exp b ≤ c - exp a := by
-  sorry
+  apply sub_le_sub_left
+  exact exp_le_exp.mpr h
 
 example : 2*a*b ≤ a^2 + b^2 := by
   have h : 0 ≤ a^2 - 2*a*b + b^2
@@ -124,4 +134,3 @@ example : |a*b| ≤ (a^2 + b^2)/2 := by
   sorry
 
 #check abs_le'.mpr
-
